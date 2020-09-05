@@ -1,15 +1,17 @@
+"use strict"
 const express = require("express")
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-
+const path=require("path")
 var mysql = require("mysql")
 
 const app=express();
 const port=process.env.PORT || 8000;
 
+app.set('view engine', 'html');
+app.engine('html', require('ejs').renderFile);
 app.use(express.json());
-app.use(express.static('./public/'));
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(morgan("dev")); // log every request to the console
 
 app.use(bodyParser.urlencoded({"extended":"true"})); // parse application/x-www-form-urlencoded
@@ -40,6 +42,19 @@ app.get('/',(req,res)=>{
     res.sendFile("./index.html")
 })
 
+app.post('/edit',(req,res)=>{
+
+   console.log(req.body)
+
+    let sql = "update todolist set data='"+req.body.newData+"' where data='"+req.body.oldData+"'";
+    console.log(sql)
+    let query = conn.query(sql,(err, results) => {
+      if(err) throw err;
+      res.redirect('/')
+    });
+  
+     
+});
 
 app.post("/sendData",(req,res)=>{
 
@@ -62,5 +77,17 @@ app.get("/retrive",(req,res)=>{
     let query = conn.query(sql,(err, results) => {
       if(err) throw err;
      res.json(results)
+    });
+})
+
+
+
+
+app.post("/remove/:id",(req,res)=>{
+
+    let sql = "delete  from todolist where id="+req.params.id;
+    let query = conn.query(sql,(err, results) => {
+      if(err) throw err;
+      res.redirect('/')
     });
 })
