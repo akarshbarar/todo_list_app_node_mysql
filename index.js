@@ -42,6 +42,10 @@ app.get('/',(req,res)=>{
     res.sendFile("./index.html")
 })
 
+app.get('/page',(req,res)=>{
+  res.sendFile(__dirname+"/public/page.html")
+})
+
 app.post('/edit',(req,res)=>{
 
    console.log(req.body)
